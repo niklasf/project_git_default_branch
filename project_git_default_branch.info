@@ -1,0 +1,8 @@
+name = Git default branch
+description = Allow project owners to select the default (HEAD) branch of the Git repository
+core = 6.x
+package = Project
+dependencies[] = project
+dependencies[] = versioncontrol
+dependencies[] = versioncontrol_git
+dependencies[] = versioncontrol_project

@@ -1,0 +1,73 @@
+<?php
+
+/**
+ * @file
+ *
+ * Allows users with access to VCS to set the default branch on project
+ * repositories.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function project_git_default_branch_menu() {
+  $items['node/%project_node/default-branch'] = array(
+    'title' => 'Default branch',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('project_git_default_branch_form', 1),
+    'access callback' => 'project_user_access',
+    'access arguments' =>  array(1, 'write to vcs'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 3,
+  );
+
+  return $items;
+}
+
+function project_git_default_branch_form($form_state, $project) {
+  if (empty($project->versioncontrol_project)) {
+    return;
+  }
+
+  $repo = $project->versioncontrol_project['repo'];
+  if (!$repo instanceof VersioncontrolGitRepository) {
+    return;
+  }
+
+  $form['#repo'] = $repo;
+
+  $form['default_branch'] = array(
+    '#title' => t('The default (HEAD) branch'),
+    '#description' => t('Select the branch that should be checked out by default when someone clones the project.'),
+    '#type' => 'radios',
+    '#options' => array(),
+  );
+
+  foreach ($repo->loadBranches() as $branch) {
+    $form['default_branch']['#options'][$branch->name] = $branch->name;
+  }
+  uasort($form['default_branch']['#options'], 'version_compare');
+
+  $default = $repo->getDefaultBranch();
+  if ($default) {
+    $form['default_branch']['#default_value'] = $default;
+  }
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+
+   return $form;
+}
+
+function project_git_default_branch_form_submit($form, &$form_state) {
+  $repo = $form['#repo'];
+
+  try {
+    $repo->setDefaultBranch($form_state['values']['default_branch']);
+  }
+  catch (Exception $e) {
+    drupal_set_message(filter_xss($e->getMessage()), 'error');
+  }
+}
