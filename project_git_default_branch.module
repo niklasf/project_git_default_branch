@@ -11,7 +11,7 @@
  * Implements hook_menu().
  */
 function project_git_default_branch_menu() {
-  $items['node/%project_node/default-branch'] = array(
+  $items['node/%project_node/edit/default-branch'] = array(
     'title' => 'Default branch',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('project_git_default_branch_form', 1),
