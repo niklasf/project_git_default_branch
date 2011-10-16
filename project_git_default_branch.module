@@ -52,7 +52,7 @@ function project_git_default_branch_form($form_state, $project) {
 
   // Make all branches available as options.
   foreach ($repo->loadBranches() as $branch) {
-    $form['default_branch']['#options'][$branch->name] = $branch->name;
+    $form['default_branch']['#options'][check_plain($branch->name)] = check_plain($branch->name);
   }
   uasort($form['default_branch']['#options'], 'version_compare');
 
