@@ -51,15 +51,16 @@ function project_git_default_branch_form($form_state, $project) {
   );
 
   // Make all branches available as options.
-  foreach ($repo->loadBranches() as $branch) {
-    $form['default_branch']['#options'][check_plain($branch->name)] = check_plain($branch->name);
+  $branches = $repo->loadBranches();
+  foreach ($branches as $id => $branch) {
+    $form['default_branch']['#options'][$id] = check_plain($branch->name);
   }
   uasort($form['default_branch']['#options'], 'version_compare');
 
   // Make the current default branch the default selection.
-  $default = $repo->getDefaultBranch();
-  if ($default) {
-    $form['default_branch']['#default_value'] = $default;
+  $default_branch = $repo->loadBranches(NULL, array('name' => $repo->getDefaultBranch()));
+  foreach ($default_branch as $id => $branch) {
+    $form['default_branch']['#default_value'] = $id;
   }
 
   // Add a submit button.
@@ -76,13 +77,16 @@ function project_git_default_branch_form($form_state, $project) {
  */
 function project_git_default_branch_form_submit($form, &$form_state) {
   $repo = $form['#repo'];
+  $default_branch = reset($repo->loadBranches(array($form_state['values']['default_branch'])));
 
-  try {
-    $repo->setDefaultBranch($form_state['values']['default_branch']);
-    $form_state['redirect'] = 'node/' . $form['#nid'];
-    drupal_set_message(t('The default branch has been changed.'));
-  }
-  catch (Exception $e) {
-    drupal_set_message(filter_xss($e->getMessage()), 'error');
+  if ($default_branch) {
+    try {
+      $repo->setDefaultBranch($default_branch->name);
+      $form_state['redirect'] = 'node/' . $form['#nid'];
+      drupal_set_message(t('The default branch has been changed.'));
+    }
+    catch (Exception $e) {
+      drupal_set_message(filter_xss($e->getMessage()), 'error');
+    }
   }
 }
