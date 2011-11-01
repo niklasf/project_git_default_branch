@@ -58,9 +58,11 @@ function project_git_default_branch_form($form_state, $project) {
   uasort($form['default_branch']['#options'], 'version_compare');
 
   // Make the current default branch the default selection.
-  $default_branch = $repo->loadBranches(NULL, array('name' => $repo->getDefaultBranch()));
-  foreach ($default_branch as $id => $branch) {
-    $form['default_branch']['#default_value'] = $id;
+  if ($repo->getDefaultBranch()) {
+    $default_branch = $repo->loadBranches(NULL, array('name' => $repo->getDefaultBranch()));
+    foreach ($default_branch as $id => $branch) {
+      $form['default_branch']['#default_value'] = $id;
+    }
   }
 
   // Add a submit button.
