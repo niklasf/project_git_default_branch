@@ -15,8 +15,8 @@ function project_git_default_branch_menu() {
     'title' => 'Default branch',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('project_git_default_branch_form', 1),
-    'access callback' => 'project_user_access',
-    'access arguments' =>  array(1, 'write to vcs'),
+    'access callback' => 'project_git_default_branch_access',
+    'access arguments' =>  array(1),
     'type' => MENU_LOCAL_TASK,
     'weight' => 3,
   );
@@ -25,22 +25,36 @@ function project_git_default_branch_menu() {
 }
 
 /**
+ * Menu access callback for the default branch form.
+ */
+function project_git_default_branch_access($project) {
+  // Display only on nodes that have a repository attached.
+  if (empty($project->versioncontrol_project)) {
+    return FALSE;
+  }
+
+  // Ensure it is a Git repository.
+  $repo = $project->versioncontrol_project['repo'];
+  if (!$repo instanceof VersioncontrolGitRepository) {
+    return FALSE;
+  }
+
+  // Ensure at least one branch exists.
+  if (!count($repo->loadBranches())) {
+    return FALSE;
+  }
+
+  // Check the permissions.
+  return project_user_access($project, 'write to vcs');
+}
+
+/**
  * Provide the default branch form.
  */
 function project_git_default_branch_form($form_state, $project) {
-  // Works only on nodes that have a repository attached.
-  if (empty($project->versioncontrol_project)) {
-    return;
-  }
-
   $repo = $project->versioncontrol_project['repo'];
   $form['#repo'] = $repo;
   $form['#nid'] = $project->nid;
-
-  // Ensure it is a Git repository.
-  if (!$repo instanceof VersioncontrolGitRepository) {
-    return;
-  }
 
   // Add the radios widget for default branch selection.
   $form['default_branch'] = array(
