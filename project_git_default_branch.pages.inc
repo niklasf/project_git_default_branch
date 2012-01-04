@@ -2,12 +2,11 @@
 
 /**
  * @file
- *
  * Page callback and submit handler for the default branch form.
  */
 
 /**
- * Provide the default branch form.
+ * Form constructor for the default branch form.
  */
 function project_git_default_branch_form($form_state, $project) {
   $repo = $project->versioncontrol_project['repo'];
@@ -43,11 +42,11 @@ function project_git_default_branch_form($form_state, $project) {
     '#value' => t('Save'),
   );
 
-   return $form;
+  return $form;
 }
 
 /**
- * Submit callback for the default branch form.
+ * Form submission handler for project_git_default_branch_form().
  */
 function project_git_default_branch_form_submit($form, &$form_state) {
   $repo = $form['#repo'];
