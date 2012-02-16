@@ -26,7 +26,7 @@ function project_git_default_branch_form($form_state, $project) {
   foreach ($branches as $id => $branch) {
     $form['default_branch']['#options'][$id] = check_plain($branch->name);
   }
-  uasort($form['default_branch']['#options'], 'version_compare');
+  uasort($form['default_branch']['#options'], '_project_git_default_branch_inverse_version_compare');
 
   // Make the current default branch the default selection.
   if ($repo->getDefaultBranch()) {
@@ -62,4 +62,21 @@ function project_git_default_branch_form_submit($form, &$form_state) {
       drupal_set_message(filter_xss($e->getMessage()), 'error');
     }
   }
+}
+
+/**
+ * Compares two branch names.
+ *
+ * Callback for uasort() within project_git_default_branch_form().
+ *
+ * @param $a
+ *   The first branch name.
+ * @param $b
+ *   The secound branch name.
+ *
+ * @return
+ *   The inverse of version_compare().
+ */
+function _project_git_default_branch_inverse_version_compare($a, $b) {
+  return version_compare($b, $a);
 }
