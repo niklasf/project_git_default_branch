@@ -1,0 +1,6 @@
+name = "Version Control Git / Project"
+description = "Provides additional Git-specific integration between the Version Control API suite and the Project suite."
+core = 6.x
+package = Version Control
+dependencies[] = versioncontrol_git
+dependencies[] = versioncontrol_project

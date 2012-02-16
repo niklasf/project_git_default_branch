@@ -2,23 +2,23 @@
 
 /**
  * @file
- * Allows users with access to VCS to set the default branch on project
- * repositories.
+ * Provides additional Git-specific integration between the Version Control API
+ * suite and the Project suite.
  */
 
 /**
  * Implements hook_menu().
  */
-function project_git_default_branch_menu() {
+function versioncontrol_project_git_menu() {
   $items['node/%project_node/edit/default-branch'] = array(
     'title' => 'Default branch',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('project_git_default_branch_form', 1),
-    'access callback' => 'project_git_default_branch_access',
+    'page arguments' => array('versioncontrol_project_git_default_branch_form', 1),
+    'access callback' => 'versioncontrol_project_git_default_branch_access',
     'access arguments' =>  array(1),
     'type' => MENU_LOCAL_TASK,
     'weight' => 3,
-    'file' => 'project_git_default_branch.pages.inc',
+    'file' => 'versioncontrol_project_git.pages.inc',
   );
 
   return $items;
@@ -36,9 +36,9 @@ function project_git_default_branch_menu() {
  *   TRUE if the project has an attached Git repository with at least one
  *   branch that the user has write access to, FALSE otherwise.
  *
- * @see project_git_default_branch_menu()
+ * @see versioncontrol_project_git_menu()
  */
-function project_git_default_branch_access($project) {
+function versioncontrol_project_git_default_branch_access($project) {
   // Display only on nodes that have a repository attached.
   if (empty($project->versioncontrol_project)) {
     return FALSE;

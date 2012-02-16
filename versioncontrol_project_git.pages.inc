@@ -8,7 +8,7 @@
 /**
  * Form constructor for the default branch form.
  */
-function project_git_default_branch_form($form_state, $project) {
+function versioncontrol_project_git_default_branch_form($form_state, $project) {
   $repo = $project->versioncontrol_project['repo'];
   $form['#repo'] = $repo;
   $form['#nid'] = $project->nid;
@@ -26,7 +26,7 @@ function project_git_default_branch_form($form_state, $project) {
   foreach ($branches as $id => $branch) {
     $form['default_branch']['#options'][$id] = check_plain($branch->name);
   }
-  uasort($form['default_branch']['#options'], '_project_git_default_branch_inverse_version_compare');
+  uasort($form['default_branch']['#options'], '_versioncontrol_project_git_inverse_version_compare');
 
   // Make the current default branch the default selection.
   if ($repo->getDefaultBranch()) {
@@ -46,9 +46,9 @@ function project_git_default_branch_form($form_state, $project) {
 }
 
 /**
- * Form submission handler for project_git_default_branch_form().
+ * Form submission handler for versioncontrol_project_git_default_branch_form().
  */
-function project_git_default_branch_form_submit($form, &$form_state) {
+function versioncontrol_project_git_default_branch_form_submit($form, &$form_state) {
   $repo = $form['#repo'];
   $default_branch = reset($repo->loadBranches(array($form_state['values']['default_branch'])));
 
@@ -67,7 +67,7 @@ function project_git_default_branch_form_submit($form, &$form_state) {
 /**
  * Compares two branch names.
  *
- * Callback for uasort() within project_git_default_branch_form().
+ * Callback for uasort() within versioncontrol_project_git_default_branch_form().
  *
  * @param $a
  *   The first branch name.
@@ -77,6 +77,6 @@ function project_git_default_branch_form_submit($form, &$form_state) {
  * @return
  *   The inverse of version_compare().
  */
-function _project_git_default_branch_inverse_version_compare($a, $b) {
+function _versioncontrol_project_git_inverse_version_compare($a, $b) {
   return version_compare($b, $a);
 }
