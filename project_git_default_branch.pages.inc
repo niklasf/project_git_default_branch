@@ -15,8 +15,8 @@ function project_git_default_branch_form($form_state, $project) {
 
   // Add the radios widget for default branch selection.
   $form['default_branch'] = array(
-    '#title' => t('The default (HEAD) branch'),
-    '#description' => t('Select the branch that should be checked out by default when someone clones the project. This will also be the default selection on the version control instructions tab.'),
+    '#title' => t('The default repository branch'),
+    '#description' => t('This branch will be checked out by default when someone clones the project.'),
     '#type' => 'radios',
     '#options' => array(),
   );
